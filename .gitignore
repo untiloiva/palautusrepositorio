@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtuaaliympäristö
+.venv/
+venv/
+
+# Testit ja kattavuus
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Väliaikaiset ja järjestelmän tiedostot
+*.tmp
+.DS_Store
+
+# Editorit
+.vscode/
+.idea/
+
+# Salaisuudet
+.env
