@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from kauppa import Kauppa
 from tuote import Tuote
@@ -69,3 +69,27 @@ class TestKauppa(unittest.TestCase):
         self._maksa_kori(1, 2)
 
         self._assert_tilisiirto(5)
+
+    def test_uusi_asiointi_ei_sisalla_edellisen_ostoksen_tuotteita(self):
+        self._maksa_kori(1)
+
+        self.kauppa.aloita_asiointi()
+        self._maksa_kori(2)
+
+        self._assert_tilisiirto(3)
+
+    def test_jokainen_maksu_pyytää_uuden_viitenumeron(self):
+        self.viitegeneraattori_mock.uusi.side_effect = [42, 43]
+
+        self._maksa_kori(1)
+        self.kauppa.aloita_asiointi()
+        self._maksa_kori(2)
+
+        self.assertEqual(self.viitegeneraattori_mock.uusi.call_count, 2)
+        self.assertEqual(
+            self.pankki_mock.tilisiirto.call_args_list,
+            [
+                call(self.asiakas, 42, self.tili, "33333-44455", 5),
+                call(self.asiakas, 43, self.tili, "33333-44455", 3),
+            ],
+        )
